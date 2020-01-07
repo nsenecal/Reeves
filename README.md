@@ -5,7 +5,7 @@ Goal: Censor questionable language in Youtube videos.
 
 #Version
 
-Beta 0.2
+Beta 0.2.1
 
 #Changelog
 
@@ -13,7 +13,9 @@ Beta 0.2
 -Added fullscreen/windowed button
 -Fixed issue where censoring function didn't recognize a change
 -Added file loading based on video URL from local directory  
--Removed filetest.py as it is not necessary
+-Removed filetest.py as it is unnecessary
+-Deleted Test.txt as it is unnecessary
+-Merged stomping_ground to master and removed the stomping_ground branch
 
 #Current Dependencies:
 -pafy
