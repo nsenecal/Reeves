@@ -1,0 +1,19 @@
+1/7/2020
+-Reimplemented the windows bar
+-Removed titlebar and exit button
+-Replaced iconify() and withdraw() with simple changes in transparency
+-Added ability to move the application window while still disappearing when focus is lost
+-Added an image directory for convenience
+-Prevent the user from resizing the window
+-Gui updates for simplicity
+-Added censor toggle button (purple). Currently dormant.
+-Added various icons
+
+1/6/2020
+-Added media bar to control playback
+-Added fullscreen/windowed button
+-Fixed issue where censoring function didn't recognize a change
+-Added file loading based on video URL from local directory
+-Removed filetest.py as it is unnecessary
+-Deleted Test.txt as it is unnecessary
+-Merged stomping_ground to master and removed the stomping_ground branch

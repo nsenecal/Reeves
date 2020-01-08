@@ -10,34 +10,32 @@ import time
 
 #Build the root
 root = tkinter.Tk()
-root.overrideredirect(1)
 width  = root.winfo_screenwidth()
 height = root.winfo_screenheight()
-root.geometry('1120x40')
-root.geometry(f"+400+{height-150}")
-root.config(background="gray")
+root.title("Reeves [Beta]")
+root.geometry('800x40')
+root.geometry("+%d+%d" % ((width/2)-400, (height-150)))
 root.wm_attributes("-topmost", 1)
-root.attributes('-alpha', 0.4)
-
-#Program Label
-name = tkinter.Label(root, text = "Reeves [BETA]")
-name.place(x=0, y=0, width= 1120, height=20)
+root.resizable(False, False)
 
 #Url label
 linkLabel = tkinter.Label(root, text = "Link:")
-linkLabel.place(x=0, y=20, width= 50, height=20)
+linkLabel.place(x=0, y=0, width= 40, height=20)
 
 #Url input field
-urlInput = tkinter.Entry(root, bd = 0)
-urlInput.place(x=50, y=20, width = 490, height = 20)
+urlInput = tkinter.Entry(root, bd = 3)
+urlInput.place(x=40, y=0, width = 300, height = 20)
 
 #Initialize vlc
 media = vlc.MediaPlayer()
 
 #load images for buttons
-startImage = tkinter.PhotoImage(file = "play.png")
-pauseImage = tkinter.PhotoImage(file = "pause.png")
-stopImage = tkinter.PhotoImage(file = "stop.png")
+startImage = tkinter.PhotoImage(file = os.getcwd()+"/Images/play.png")
+pauseImage = tkinter.PhotoImage(file = os.getcwd()+"/Images/pause.png")
+stopImage = tkinter.PhotoImage(file = os.getcwd()+"/Images/stop.png")
+soundImage = tkinter.PhotoImage(file = os.getcwd()+"/Images/sound.png")
+fullImage = tkinter.PhotoImage(file = os.getcwd()+"/Images/full.png")
+windowImage = tkinter.PhotoImage(file = os.getcwd()+"/Images/windowed.png")
 
 #Initialize array containing values from text file
 iteration = 0
@@ -64,7 +62,7 @@ def playBack():
             if currentVideo == urlInput.get():
                 global moment
                 global endGame
-                if mute == True:
+                if enforcedMute == True:
                     moment = media.get_time()/1000
                 media.play()
                 state = True
@@ -82,12 +80,12 @@ def playBack():
                 loadFile(urlInput.get())
                 media.play()
                 media.set_fullscreen(screenSize)
-            start.config(image = pauseImage)
+                start.config(image = pauseImage)
         else:
             print("Unable to open link")
             urlInput.delete(0,tkinter.END)
-    elif state == True:
-        if mute == True:
+    elif state == True and media.is_playing():
+        if enforcedMute == True:
             endGame -= ((media.get_time()/1000)-moment)
         media.pause()
         start.config(image = startImage)
@@ -99,17 +97,12 @@ def alterSize():
     global screenSize
     if screenSize == False:
         screenSize = True
-        screenButton.config(text = "F")
+        screenButton.config(image = fullImage)
     else:
         screenSize = False
-        screenButton.config(text = "S")
+        screenButton.config(image = windowImage)
     if state == True:
         media.set_fullscreen(screenSize)
-
-#Exit button function
-def exit():
-    root.destroy()
-    sys.exit("Program was terminated")
 
 #Stop button function
 def stop():
@@ -122,9 +115,9 @@ def stop():
     mediaSlider.set(0)
 
 #Adjust sound when slider is changed
-mute = False
+enforcedMute = False
 def sound(self):
-    if mute != True:
+    if enforcedMute != True:
         media.audio_set_volume(volumeSlider.get())
 
 #Scrubbing
@@ -132,50 +125,63 @@ scrubbing = False
 videoLength = 0
 def scrub(self):
     if media.get_length() > 0:
-        media.set_time(int(videoLength*(mediaSlider.get())/200))
+        media.set_time(int(videoLength*(mediaSlider.get())/root.winfo_width()))
 
 def startScrub(self):
-    scrubbing = True
-    mediaSlider.config(command=scrub)
+    if media.is_playing():
+        scrubbing = True
+        mediaSlider.config(command=scrub)
 
 def stopScrub(self):
-    mediaSlider.config(command=focusOff)
-    scrubbing = False
-    for i in range(0, len(result)+1):
-        if list(result)[i] > (media.get_time()/1000):
-            global iteration
-            iteration = i
-            moment = None
-            break
+    if media.is_playing():
+        mediaSlider.config(command=focusOff)
+        scrubbing = False
+        for i in range(0, len(result)+1):
+            if list(result)[i] > (media.get_time()/1000):
+                global iteration
+                iteration = i
+                moment = None
+                break
 
 def focusOff(self):
     print()
 
+censorState = True
+def censor():
+    if media.is_playing() == 0:
+        global censorState
+        if censorState == True:
+            censorState = False
+            delet.config(text = "X")
+        else:
+            censorState = True
+            delet.config(text = "C")
+
 #Start button
 start = tkinter.Button(root, image = startImage, command = playBack)
-start.place(x=540,y=20,height = 20,width = 20)
+start.place(x=380,y=0,height = 20,width = 20)
 stop = tkinter.Button(root, image = stopImage, command = stop)
-stop.place(x=560,y=20,height = 20,width = 20)
-
-#Exit button
-terminate = tkinter.Button(root, text = "X", bg = "red", command = exit)
-terminate.place(x=1100,y=0,height = 20,width = 20)
+stop.place(x=400,y=0,height = 20,width = 20)
+volumeLabel = tkinter.Label(root, image = soundImage)
+volumeLabel.place(x=440, y=0, width=20, height=20)
 
 #Fullscreen buttons
-screenButton = tkinter.Button(root, text = "S", bg = "purple", command = alterSize)
-screenButton.place(x=1100,y=20,height = 20,width = 20)
+screenButton = tkinter.Button(root, image = windowImage, command = alterSize)
+screenButton.place(x=780, y=0,height = 20,width = 20)
+
+#Toggles censor system
+delet = tkinter.Button(root,bg = "purple", text = "C", command = censor)
+delet.place(x=340, y=0,height = 20,width = 20)
 
 #Volume slider
-volumeLabel = tkinter.Label(root, text = "Volume:")
-volumeLabel.place(x=580, y=20, width= 50, height=20)
-volumeSlider = tkinter.Scale(root, showvalue = 0, length=100, from_=0, to=100, orient=tkinter.HORIZONTAL, command = sound)
-volumeSlider.place(x=630, y=20)
+volumeSlider = tkinter.Scale(root, showvalue = 0, length=200, from_=0, to=100, orient=tkinter.HORIZONTAL, command = sound)
+volumeSlider.place(x=460, y=0)
 volumeSlider.set(50) #Set position to half so it matches initial volume
 media.audio_set_volume(50) #Set volume to half
 
 #scrubber
-mediaSlider = tkinter.Scale(root, showvalue = 0, length=200, from_=0, to=200, orient=tkinter.HORIZONTAL, command = focusOff)
-mediaSlider.place(x=730, y=20)
+mediaSlider = tkinter.Scale(root, showvalue = 0, length=795, from_=0, to=795, orient=tkinter.HORIZONTAL, command = focusOff)
+mediaSlider.place(x=0, y=20)
 mediaSlider.set(0)
 mediaSlider.bind("<Button-1>", startScrub)
 mediaSlider.bind("<ButtonRelease-1>", stopScrub)
@@ -192,11 +198,11 @@ while True:
                     if moment == None:
                         previousVolume = media.audio_get_volume()
                         media.audio_set_volume(0)
-                        mute = True
+                        enforcedMute = True
                         moment = currentTime
                         endGame = result[list(result)[iteration]]
                     elif moment != None and (currentTime - moment) >= endGame:
-                        mute = False
+                        enforcedMute = False
                         iteration += 1
                         moment = None
                         endGame = None
@@ -204,17 +210,17 @@ while True:
 
     #Check Mouse Position
     x, y = pyautogui.position()
-    if y >= (height-190) and y <= (height-90) and x >= 0 and x <= width:
-        root.deiconify()
+    if y >= root.winfo_y()-20 and y <= root.winfo_y()+root.winfo_height()+40 and x >= root.winfo_x()-20 and x <= root.winfo_x()+root.winfo_width()+20:
+        root.attributes('-alpha', 1)
         root.update()
-    elif y > (height-190) or y < (height-90):
-        root.withdraw()
+    elif y > root.winfo_y()-20 or y < root.winfo_y()+root.winfo_height()+40:
+        root.attributes('-alpha', 0)
         root.update()
     #prevents loop from imploding
     if media.get_length() > 0: #Stream takes time to send the length over, so we wait until it's not a nil value
         videoLength = media.get_length()
         if scrubbing == False:
-            mediaSlider.set((media.get_time()/videoLength)*200)
+            mediaSlider.set((media.get_time()/videoLength)*root.winfo_width())
     time.sleep(0.01)
 
 root.mainloop()
