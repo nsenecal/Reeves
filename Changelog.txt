@@ -4,7 +4,7 @@
 -Replaced iconify() and withdraw() with simple changes in transparency
 -Added ability to move the application window while still disappearing when focus is lost
 -Added an image directory for convenience
--Prevent the user from resizing the window
+-Added prevention from the user resizing the window
 -Gui updates for simplicity
 -Added censor toggle button (purple). Currently dormant.
 -Added various icons

@@ -9,13 +9,7 @@ Beta 0.2.1
 
 #Changelog
 
--Added media bar to control playback
--Added fullscreen/windowed button
--Fixed issue where censoring function didn't recognize a change
--Added file loading based on video URL from local directory  
--Removed filetest.py as it is unnecessary
--Deleted Test.txt as it is unnecessary
--Merged stomping_ground to master and removed the stomping_ground branch
+-Check Changelog.txt
 
 #Current Dependencies:
 -pafy
