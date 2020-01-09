@@ -1,5 +1,6 @@
 1/8/2020
 -Included modules locally, no need to install them 
+-Script will automatically search for censor files hosted on github if none are found locally
 
 1/7/2020
 -Reimplemented the windows bar

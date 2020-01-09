@@ -1,4 +1,4 @@
-###### Reeves
+# Reeves
 
 Written in python 3.8.
 
@@ -6,7 +6,7 @@ Goal: Censor questionable language in Youtube videos.
 
 # Version
 
-Beta 0.2.2
+Beta 0.2.3
 
 # Changelog
 
@@ -43,3 +43,5 @@ N/A as of this point
 # Known issues
 
 -Volume sometimes drops off after using the media bar
+
+-Loading a video after using the start button fails

@@ -7,6 +7,7 @@ import pyautogui
 import sys
 import os
 import time
+import requests
 
 #Build the root
 root = tkinter.Tk()
@@ -41,15 +42,24 @@ windowImage = tkinter.PhotoImage(file = os.getcwd()+"/Images/windowed.png")
 iteration = 0
 result = dict()
 def loadFile(unsliced):
-
-    if os.path.exists(os.getcwd()+"/Censcript/" + unsliced.strip("https://www.youtube.com/watch?v=") + ".txt"):
-        path = open(os.getcwd()+"/Censcript/" + unsliced.strip("https://www.youtube.com/watch?v=") + ".txt")
+    if os.path.exists(os.getcwd()+"/VideoCollection/" + unsliced.strip("https://www.youtube.com/watch?v=") + ".txt"):
+        path = open(os.getcwd()+"/VideoCollection/" + unsliced.strip("https://www.youtube.com/watch?v=") + ".txt")
         with path as file:
             for line in file:
                 a, b = line.split(",")
                 result[float(a)] = float(b.strip("\n"))
     else:
         print("no local file")
+        req = requests.get("https://raw.githubusercontent.com/nsenecal/Reeves/master/Censcript/"+ unsliced.strip("https://www.youtube.com/watch?v=") + ".txt")
+        if req.status_code == 200:
+            filename = os.path.join(os.getcwd()+"/Censcript/", unsliced.strip("https://www.youtube.com/watch?v=") + ".txt")
+            f = open(filename, 'w')
+            f.write(req.text)
+            f = open(filename, 'r')
+            with f as file:
+                for line in file:
+                    a, b = line.split(",")
+                    result[float(a)] = float(b.strip("\n"))
 
 #Initialize identifier variables
 currentVideo = ""
@@ -72,8 +82,7 @@ def playBack():
                 media.play()
                 state = True
             elif currentVideo != urlInput.get():
-                if media.is_playing() == 1:
-                    media.stop()
+                media.stop()
                 video = pafy.new(urlInput.get())
                 best = video.getbest()
                 media = vlc.MediaPlayer(best.url)
