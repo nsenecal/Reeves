@@ -41,10 +41,15 @@ windowImage = tkinter.PhotoImage(file = os.getcwd()+"/Images/windowed.png")
 iteration = 0
 result = dict()
 def loadFile(unsliced):
-    with open(os.getcwd()+"/Censcript/" + unsliced.strip("https://www.youtube.com/watch?v=") + ".txt") as file:
-        for line in file:
-            a, b = line.split(",")
-            result[float(a)] = float(b.strip("\n"))
+
+    if os.path.exists(os.getcwd()+"/Censcript/" + unsliced.strip("https://www.youtube.com/watch?v=") + ".txt"):
+        path = open(os.getcwd()+"/Censcript/" + unsliced.strip("https://www.youtube.com/watch?v=") + ".txt")
+        with path as file:
+            for line in file:
+                a, b = line.split(",")
+                result[float(a)] = float(b.strip("\n"))
+    else:
+        print("no local file")
 
 #Initialize identifier variables
 currentVideo = ""
@@ -190,23 +195,24 @@ previousVolume = None
 #Oh boy, a loop
 while True:
     #Checks if media is playing
-    if media.is_playing() == 1:
-        currentTime = media.get_time()/1000
-        if scrubbing == False:
-            if len(result) != iteration:
-                if (currentTime >= (list(result)[iteration])):
-                    if moment == None:
-                        previousVolume = media.audio_get_volume()
-                        media.audio_set_volume(0)
-                        enforcedMute = True
-                        moment = currentTime
-                        endGame = result[list(result)[iteration]]
-                    elif moment != None and (currentTime - moment) >= endGame:
-                        enforcedMute = False
-                        iteration += 1
-                        moment = None
-                        endGame = None
-                        media.audio_set_volume(previousVolume)
+    if len(result) > 0:
+        if media.is_playing() == 1:
+            currentTime = media.get_time()/1000
+            if scrubbing == False:
+                if len(result) != iteration:
+                    if (currentTime >= (list(result)[iteration])):
+                        if moment == None:
+                            previousVolume = media.audio_get_volume()
+                            media.audio_set_volume(0)
+                            enforcedMute = True
+                            moment = currentTime
+                            endGame = result[list(result)[iteration]]
+                        elif moment != None and (currentTime - moment) >= endGame:
+                            enforcedMute = False
+                            iteration += 1
+                            moment = None
+                            endGame = None
+                            media.audio_set_volume(previousVolume)
 
     #Check Mouse Position
     x, y = pyautogui.position()

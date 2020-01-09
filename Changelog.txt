@@ -1,3 +1,6 @@
+1/8/2020
+-Included modules locally, no need to install them 
+
 1/7/2020
 -Reimplemented the windows bar
 -Removed titlebar and exit button

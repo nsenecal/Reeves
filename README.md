@@ -1,37 +1,45 @@
-# Reeves
+###### Reeves
 
 Written in python 3.8.
+
 Goal: Censor questionable language in Youtube videos.
 
-#Version
+# Version
 
-Beta 0.2.1
+Beta 0.2.2
 
-#Changelog
+# Changelog
 
 -Check Changelog.txt
 
-#Current Dependencies:
+# Current Dependencies:
+
+**None of these need to be installed. They are already contained in the source files.**
+
 -pafy
--python-vlc (Currently using vlc.py)
+
+-python-vlc
+
 -pyautogui
 
-#Status
+# Status
 
 Currently being developed.
 
-#Compilation for OS'
+# Compilation for OS'
 
 N/A as of this point
 
-#Testing
+# Testing
 
 -Download and extract source files to local directory
+
 -Install python 3.8
--pip install the following: pafy and pyautogui
--run Reeves.py from the command line
+
+-run Reeves.py
+
 -Load this video: https://www.youtube.com/watch?v=f0j--Y6G4Fg and it will censor the first four "swears" in the video.
 
-#Known issues
+# Known issues
 
 -Volume sometimes drops off after using the media bar
