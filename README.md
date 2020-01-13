@@ -22,6 +22,8 @@ Beta 0.2.3
 
 -pyautogui
 
+-youtube-dl
+
 # Status
 
 Currently being developed.
@@ -43,5 +45,4 @@ N/A as of this point
 # Known issues
 
 -Volume sometimes drops off after using the media bar
-
--Loading a video after using the start button fails
+-Video still plays after telling it not to

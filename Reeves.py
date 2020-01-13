@@ -40,6 +40,7 @@ fullImage = tkinter.PhotoImage(file = os.getcwd()+"/Images/full.png")
 windowImage = tkinter.PhotoImage(file = os.getcwd()+"/Images/windowed.png")
 
 #Initialize array containing values from text file
+userDecision = True
 result = dict()
 def loadFile(unsliced):
     global state
@@ -66,15 +67,17 @@ def loadFile(unsliced):
                 censorState = False
                 ask = messagebox.askyesno("Reeves","No File Found. Play Anyway?")
                 if ask == False:
-                    state = False
+                    userDecision = False
+                else:
+                    userDecision = True
 
         else:
             messagebox.askyesno("Reeves", "Censoring Disabled. Play Anyway?")
             censorState = False
             if ask == True:
-                state = True
+                userDecision = True
             else:
-                state = False
+                userDecision = False
 
 #Initialize identifier variables
 currentVideo = None
@@ -87,6 +90,7 @@ iteration = 0
 def playBack():
     global state
     global media
+    global userDecision
     if state == False:
         global currentVideo
         if urlInput.get().find("https://www.youtube.com/watch?v=") or urlInput.get().find("https://youtu.be/"):
@@ -110,7 +114,7 @@ def playBack():
                 iteration = 0
                 moment = None
                 loadFile(urlInput.get())
-                if state == True:
+                if userDecision == True:
                     media.play()
                     media.set_fullscreen(screenSize)
                     start.config(image = pauseImage)
