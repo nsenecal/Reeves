@@ -39,11 +39,30 @@ soundImage = tkinter.PhotoImage(file = os.getcwd()+"/Images/sound.png")
 fullImage = tkinter.PhotoImage(file = os.getcwd()+"/Images/full.png")
 windowImage = tkinter.PhotoImage(file = os.getcwd()+"/Images/windowed.png")
 
+def playVideo():
+    print("play")
+    global media
+    global state
+    global iteration
+    media.stop()
+    dict.clear(result)
+    video = pafy.new(urlInput.get())
+    best = video.getbest()
+    media = vlc.MediaPlayer(best.url)
+    currentVideo = urlInput.get()
+    iteration = 0
+    moment = None
+    media.play()
+    media.set_fullscreen(screenSize)
+    start.config(image = pauseImage)
+    state = True
+
 #Initialize array containing values from text file
-userDecision = True
+currentVideo = None
 result = dict()
 def loadFile(unsliced):
     global state
+    global currentVideo
     if os.path.exists(os.getcwd()+"/Censcript/" + unsliced.strip("https://www.youtube.com/watch?v=") + ".txt"):
         path = open(os.getcwd()+"/Censcript/" + unsliced.strip("https://www.youtube.com/watch?v=") + ".txt")
         with path as file:
@@ -66,21 +85,21 @@ def loadFile(unsliced):
             else:
                 censorState = False
                 ask = messagebox.askyesno("Reeves","No File Found. Play Anyway?")
-                if ask == False:
-                    userDecision = False
+                if ask == True:
+                    playVideo()
                 else:
-                    userDecision = True
-
+                    currentVideo = None
+                    urlInput.delete(0,tkinter.END)
         else:
-            messagebox.askyesno("Reeves", "Censoring Disabled. Play Anyway?")
             censorState = False
+            ask = messagebox.askyesno("Reeves", "Censoring Disabled. Play Anyway?")
             if ask == True:
-                userDecision = True
+                playVideo()
             else:
-                userDecision = False
+                currentVideo = None
+                urlInput.delete(0,tkinter.END)
 
 #Initialize identifier variables
-currentVideo = None
 state = False
 moment = None
 endGame = None
@@ -90,7 +109,6 @@ iteration = 0
 def playBack():
     global state
     global media
-    global userDecision
     if state == False:
         global currentVideo
         if urlInput.get().find("https://www.youtube.com/watch?v=") or urlInput.get().find("https://youtu.be/"):
@@ -109,18 +127,10 @@ def playBack():
                 best = video.getbest()
                 media = vlc.MediaPlayer(best.url)
                 currentVideo = urlInput.get()
-                state = True
                 global iteration
                 iteration = 0
                 moment = None
                 loadFile(urlInput.get())
-                if userDecision == True:
-                    media.play()
-                    media.set_fullscreen(screenSize)
-                    start.config(image = pauseImage)
-                else:
-                    currentVideo = None
-                    urlInput.delete(0,tkinter.END)
         else:
             print("Unable to open link")
             urlInput.delete(0,tkinter.END)
@@ -269,6 +279,7 @@ while True:
         if scrubbing == False:
             mediaSlider.set((media.get_time()/videoLength)*root.winfo_width())
     #prevents loop from imploding
+    print(state)
     time.sleep(0.01)
 
 root.mainloop()

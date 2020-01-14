@@ -6,7 +6,7 @@ Goal: Censor questionable language in Youtube videos.
 
 # Version
 
-Beta 0.2.3
+Beta 0.5.0
 
 # Changelog
 
@@ -45,4 +45,5 @@ N/A as of this point
 # Known issues
 
 -Volume sometimes drops off after using the media bar
--Video still plays after telling it not to
+
+-Wrapped program spits error when closed

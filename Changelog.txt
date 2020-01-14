@@ -1,7 +1,12 @@
+1/13/2020
+-Added icon
+-Fixed verification dialogs
+-Built windows version
+-Fixed verification dialogs
+
 1/12/2020
 -Fully implemented verification dialogs
 -Added Youtube-dl as it wasn't properly included
-
 
 1/8/2020
 -Included modules locally, no need to install them 
