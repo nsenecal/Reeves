@@ -40,12 +40,9 @@ fullImage = tkinter.PhotoImage(file = os.getcwd()+"/Images/full.png")
 windowImage = tkinter.PhotoImage(file = os.getcwd()+"/Images/windowed.png")
 
 def playVideo():
-    print("play")
     global media
     global state
     global iteration
-    media.stop()
-    dict.clear(result)
     video = pafy.new(urlInput.get())
     best = video.getbest()
     media = vlc.MediaPlayer(best.url)
@@ -59,18 +56,22 @@ def playVideo():
 
 #Initialize array containing values from text file
 currentVideo = None
+media.stop()
 result = dict()
 def loadFile(unsliced):
     global state
     global currentVideo
+    dict.clear(result)
     if os.path.exists(os.getcwd()+"/Censcript/" + unsliced.strip("https://www.youtube.com/watch?v=") + ".txt"):
         path = open(os.getcwd()+"/Censcript/" + unsliced.strip("https://www.youtube.com/watch?v=") + ".txt")
         with path as file:
             for line in file:
                 a, b = line.split(",")
                 result[float(a)] = float(b.strip("\n"))
+        playVideo()
     else:
         ask = messagebox.askyesno("Reeves","No local file found. Check the GitHub Repository?")
+        global censorState
         if ask == True:
             req = requests.get("https://raw.githubusercontent.com/nsenecal/Reeves/master/VideoCollection/"+ unsliced.strip("https://www.youtube.com/watch?v=") + ".txt")
             if req.status_code == 200:
@@ -82,18 +83,19 @@ def loadFile(unsliced):
                     for line in file:
                         a, b = line.split(",")
                         result[float(a)] = float(b.strip("\n"))
+                playVideo()
             else:
-                censorState = False
                 ask = messagebox.askyesno("Reeves","No File Found. Play Anyway?")
                 if ask == True:
+                    censorState = False
                     playVideo()
                 else:
                     currentVideo = None
                     urlInput.delete(0,tkinter.END)
         else:
-            censorState = False
             ask = messagebox.askyesno("Reeves", "Censoring Disabled. Play Anyway?")
             if ask == True:
+                censorState = False
                 playVideo()
             else:
                 currentVideo = None
@@ -158,12 +160,14 @@ def alterSize():
 def stop():
     global state
     global currentVideo
+    global censorState
     start.config(image = startImage)
     media.stop()
     urlInput.delete(0,tkinter.END)
     mediaSlider.set(0)
     currentVideo = None
     state = False
+    censorState = True
 
 #Adjust sound when slider is changed
 enforcedMute = False
@@ -240,7 +244,6 @@ mediaSlider.bind("<ButtonRelease-1>", stopScrub)
 previousVolume = None
 #Oh boy, a loop
 while True:
-    #Checks if media is playing
     if len(result) > 0:
         if media.is_playing() == 1 and censorState == True:
             currentTime = media.get_time()/1000
@@ -258,7 +261,6 @@ while True:
                         moment = None
                         endGame = None
                         media.audio_set_volume(previousVolume)
-
     #Check Mouse Position
     x, y = pyautogui.position()
     if y >= root.winfo_y()-20 and y <= root.winfo_y()+root.winfo_height()+40 and x >= root.winfo_x()-20 and x <= root.winfo_x()+root.winfo_width()+20:
@@ -279,7 +281,6 @@ while True:
         if scrubbing == False:
             mediaSlider.set((media.get_time()/videoLength)*root.winfo_width())
     #prevents loop from imploding
-    print(state)
     time.sleep(0.01)
 
 root.mainloop()

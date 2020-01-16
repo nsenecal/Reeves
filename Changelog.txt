@@ -1,3 +1,7 @@
+1/15/202
+-Fixed disabling censoring
+-Media buttons should work now
+
 1/13/2020
 -Added icon
 -Fixed verification dialogs

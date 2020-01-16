@@ -6,7 +6,7 @@ Goal: Censor questionable language in Youtube videos.
 
 # Version
 
-Beta 0.5.0
+Beta 0.5.1
 
 # Changelog
 
@@ -30,7 +30,7 @@ Currently being developed.
 
 # Compilation for OS'
 
-N/A as of this point
+Windows: Wrapped using pyinstaller
 
 # Testing
 
