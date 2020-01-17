@@ -1,3 +1,9 @@
+1/17/2020
+-Added a required key to be held to show the menu (Currently left alt)
+-Implimented wrapped vlc player
+-Removed fullscreen/windowed modes in favor of warpped vlc
+-Added pynput
+
 1/15/202
 -Fixed disabling censoring
 -Media buttons should work now

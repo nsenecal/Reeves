@@ -6,7 +6,7 @@ Goal: Censor questionable language in Youtube videos.
 
 # Version
 
-Beta 0.5.1
+Beta 0.6.0
 
 # Changelog
 
@@ -23,6 +23,10 @@ Beta 0.5.1
 -pyautogui
 
 -youtube-dl
+
+-requests
+
+-pynput
 
 # Status
 
@@ -45,5 +49,7 @@ Windows: Wrapped using pyinstaller
 # Known issues
 
 -Volume sometimes drops off after using the media bar
+
+-After a video ends the player must be manually stopped in order for another link to be loaded
 
 -Wrapped program spits error when closed
