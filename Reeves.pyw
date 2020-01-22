@@ -10,13 +10,15 @@ import time
 import requests
 import pynput
 from pynput.keyboard import Key, Listener
+import urllib.request
+from bs4 import BeautifulSoup
 
 #Build the root
 root = tkinter.Tk()
 width  = root.winfo_screenwidth()
 height = root.winfo_screenheight()
 root.title("Reeves [Beta]")
-root.geometry('800x40')
+root.geometry('600x80')
 root.geometry("+%d+%d" % ((width/2)-400, (height-150)))
 root.wm_attributes("-topmost", 1)
 root.resizable(False, False)
@@ -31,7 +33,7 @@ linkLabel.place(x=0, y=0, width= 40, height=20)
 
 #Url input field
 urlInput = tkinter.Entry(root, bd = 3)
-urlInput.place(x=40, y=0, width = 300, height = 20)
+urlInput.place(x=40, y=0, width = 220, height = 20)
 
 #Initialize vlc
 media = vlc.MediaPlayer()
@@ -44,25 +46,58 @@ soundImage = tkinter.PhotoImage(file = os.getcwd()+"/Images/sound.png")
 fullImage = tkinter.PhotoImage(file = os.getcwd()+"/Images/full.png")
 windowImage = tkinter.PhotoImage(file = os.getcwd()+"/Images/windowed.png")
 
-def playVideo():
+frame = tkinter.Frame(root)
+frame.place(x = 340, y = 0, width = 300, height = 60)
+lb = tkinter.Listbox(frame, width=40, height=1)
+lb.pack(side = 'left',fill = 'y' )
+scrollbar = tkinter.Scrollbar(frame, orient="vertical",command=lb.yview)
+scrollbar.pack(side = "left",fill="y")
+
+def click(self):
+    del que[lb.get("active")]
+    idx = lb.get(0, tkinter.END).index(lb.get("active"))
+    lb.delete(idx)
+    print(que)
+lb.bind("<Double-1>", click)
+def search():
+    if entry.get() != "":
+        query = urllib.parse.quote(entry.get())
+        url = "https://www.youtube.com/results?search_query=" + query
+        response = urllib.request.urlopen(url)
+        html = response.read()
+        soup = BeautifulSoup(html, 'html.parser')
+        code = soup.find(attrs={'class':'yt-uix-tile-link'})['href']
+        lb.insert(tkinter.END, pafy.new('https://www.youtube.com' +code).title)
+        que[pafy.new('https://www.youtube.com' + code).title] = 'https://www.youtube.com' + code
+        entry.delete(0,tkinter.END)
+que = {}
+entry = tkinter.Entry(root, bd=3)
+entry.place(x=40,y=40,height = 20,width = 200)
+button = tkinter.Button(root, bg = "red", command = search)
+button.place(x=240,y=40,height = 20,width = 20)
+
+def playVideo(data):
     global media
     global state
     global iteration
-    video = pafy.new(urlInput.get())
+    global currentVideo
+    video = pafy.new(data)
     best = video.getbest()
     media = vlc.MediaPlayer(best.url)
-    currentVideo = urlInput.get()
+    currentVideo = data
     iteration = 0
     moment = None
     h = canvas.winfo_id()
     media.set_hwnd(h)
     media.play()
     startButton.config(image = pauseImage)
+    while media.is_playing() == 0:
+        state = False
     state = True
 
 #Initialize array containing values from text file
+autoPlay = True
 currentVideo = None
-media.stop()
 result = dict()
 def loadFile(unsliced):
     global state
@@ -76,7 +111,7 @@ def loadFile(unsliced):
                 for line in file:
                     a, b = line.split(",")
                     result[float(a)] = float(b.strip("\n"))
-            playVideo()
+            playVideo(urlInput.get())
         else:
             ask = messagebox.askyesno("Reeves","No local file found. Check the GitHub Repository?")
             if ask == True:
@@ -90,25 +125,25 @@ def loadFile(unsliced):
                         for line in file:
                             a, b = line.split(",")
                             result[float(a)] = float(b.strip("\n"))
-                    playVideo()
+                    playVideo(unsliced)
                 else:
                     ask = messagebox.askyesno("Reeves","No File Found. Play Anyway?")
                     if ask == True:
                         censorState = False
-                        playVideo()
+                        playVideo(unsliced)
                     else:
                         currentVideo = None
-                        urlInput.delete(0,tkinter.END)
             else:
                 ask = messagebox.askyesno("Reeves", "Censoring Disabled. Play Anyway?")
                 if ask == True:
                     censorState = False
-                    playVideo()
+                    playVideo(unsliced)
                 else:
                     currentVideo = None
-                    urlInput.delete(0,tkinter.END)
+
     else:
-        playVideo()
+        playVideo(unsliced)
+    urlInput.delete(0,tkinter.END)
 #Initialize identifier variables
 state = False
 moment = None
@@ -119,32 +154,23 @@ iteration = 0
 def playBack():
     global state
     global media
+    global currentVideo
+    global moment
+    global endGame
     if state == False:
-        global currentVideo
-        if urlInput.get().find("https://www.youtube.com/watch?v=") or urlInput.get().find("https://youtu.be/"):
-            if currentVideo == urlInput.get():
-                global moment
-                global endGame
-                global censorState
-                if enforcedMute == True:
-                    moment = media.get_time()/1000
-                media.play()
-                startButton.config(image = pauseImage)
-                state = True
-            elif currentVideo != urlInput.get():
-                media.stop()
-                dict.clear(result)
-                video = pafy.new(urlInput.get())
-                best = video.getbest()
-                media = vlc.MediaPlayer(best.url)
-                currentVideo = urlInput.get()
-                global iteration
-                iteration = 0
-                moment = None
+        if currentVideo == None:
+            if urlInput.get().find("https://www.youtube.com/watch?v=") > -1 or urlInput.get().find("https://youtu.be/") > -1 and currentVideo == None:
                 loadFile(urlInput.get())
+            elif urlInput.get().find("https://www.youtube.com/watch?v=") == -1 and urlInput.get().find("https://youtu.be/") == -1 and len(que) > 0:
+                loadFile(que[list(que.keys())[0]])
+                lb.delete(0)
+                del que[list(que.keys())[0]]
         else:
-            print("Unable to open link")
-            urlInput.delete(0,tkinter.END)
+            if enforcedMute == True:
+                moment = media.get_time()/1000
+            media.play()
+            startButton.config(image = pauseImage)
+            state = True
     elif state == True and media.is_playing():
         if enforcedMute == True:
             endGame -= ((media.get_time()/1000)-moment)
@@ -157,13 +183,13 @@ def stop():
     global state
     global currentVideo
     global censorState
+    global media
     startButton.config(image = startImage)
     media.stop()
     urlInput.delete(0,tkinter.END)
     mediaSlider.set(0)
     currentVideo = None
     state = False
-    censorState = True
 
 #Adjust sound when slider is changed
 enforcedMute = False
@@ -194,8 +220,8 @@ def stopScrub(self):
                 moment = None
                 break
 
-def focusOff():
-    return
+def focusOff(self):
+    print("")
 
 censorState = True
 from tkinter import messagebox
@@ -210,45 +236,52 @@ def censor():
 
 #Start button
 startButton = tkinter.Button(root, image = startImage, command = playBack)
-startButton.place(x=380,y=0,height = 20,width = 20)
+startButton.place(x=280,y=0,height = 20,width = 20)
 stopButton = tkinter.Button(root, image = stopImage, command = stop)
-stopButton.place(x=400,y=0,height = 20,width = 20)
+stopButton.place(x=300,y=0,height = 20,width = 20)
 volumeLabel = tkinter.Label(root, image = soundImage)
-volumeLabel.place(x=550, y=0, width=20, height=20)
+volumeLabel.place(x=0, y=20, width=40, height=20)
+searchLabel = tkinter.Label(root, text = "Search:")
+searchLabel.place(x=0, y=40, width=40, height=20)
 
 #Toggles censor system
 delet = tkinter.Button(root, command = censor)
-delet.place(x=460, y=0, height = 20, width = 70)
+delet.place(x=280, y=20, height = 20, width = 40)
 
 #Volume slider
-volumeSlider = tkinter.Scale(root, showvalue = 0, length=200, from_=0, to=100, orient=tkinter.HORIZONTAL, command = sound)
-volumeSlider.place(x=570, y=0)
+volumeSlider = tkinter.Scale(root, showvalue = 0, length=220, from_=0, to=100, orient=tkinter.HORIZONTAL, command = sound)
+volumeSlider.place(x=37, y=20)
 volumeSlider.set(50) #Set position to half so it matches initial volume
 media.audio_set_volume(50) #Set volume to half
 
 #scrubber
-mediaSlider = tkinter.Scale(root, bd = 0, showvalue = 0, length=795, from_=0, to=795, orient=tkinter.HORIZONTAL, command = focusOff)
-mediaSlider.place(x=0, y=20)
+mediaSlider = tkinter.Scale(root, bd = 0, showvalue = 0, length=595, from_=0, to=595, orient=tkinter.HORIZONTAL, command = focusOff)
+mediaSlider.place(x=0, y=60)
 mediaSlider.set(0)
 mediaSlider.bind("<Button-1>", startScrub)
 mediaSlider.bind("<ButtonRelease-1>", stopScrub)
 
 previousVolume = None
 
-enabled = False
-def on_press(key):
-    global enabled
-    if key == pynput.keyboard.Key.alt_l:
-        enabled = True
+enabled = True
 def on_release(key):
     global enabled
     if key == pynput.keyboard.Key.alt_l:
-        enabled = False
-listener = pynput.keyboard.Listener(on_press=on_press, on_release=on_release)
+        if enabled == False:
+            enabled = True
+        else:
+            enabled = False
+        print(enabled)
+listener = pynput.keyboard.Listener(on_release=on_release)
 listener.start()
 
 newWindow.protocol('WM_DELETE_WINDOW', focusOff)
 
+def exit():
+    os._exit(True)
+root.protocol('WM_DELETE_WINDOW', exit)
+
+print("Running")
 #Oh boy, a loop
 while True:
     if len(result) > 0:
@@ -278,15 +311,21 @@ while True:
         root.update()
 
     if censorState == True:
-        delet.config(text = "Censoring", bg = "Green")
+        delet.config(text = "Censor", bg = "Green")
     else:
-        delet.config(text = "Uncensored", bg = "Red")
+        delet.config(text = "Raw", bg = "Red")
     #Stream takes time to send the length over, so we wait until it's not a nil value
     if media.get_length() > 0:
         videoLength = media.get_length()
         if scrubbing == False:
             mediaSlider.set((media.get_time()/videoLength)*root.winfo_width())
+    if media.is_playing() == 0 and state == True:
+        stop()
+        if len(que) > 0 and autoPlay == True:
+            loadFile(que[list(que.keys())[0]])
+            lb.delete(0)
+            del que[list(que.keys())[0]]
     #prevents loop from imploding
-    time.sleep(0.01)
+    time.sleep(0.1)
 
 root.mainloop()

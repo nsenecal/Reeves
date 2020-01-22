@@ -1,3 +1,7 @@
+1/21/2020
+-Added youtube search function
+-Added video que
+-Re-adjusted gui
 1/17/2020
 -Added a required key to be held to show the menu (Currently left alt)
 -Implimented wrapped vlc player

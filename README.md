@@ -1,12 +1,14 @@
 # Reeves
 
+A flexible Youtube video player.
+
 Written in python 3.8.
 
 Goal: Censor questionable language in Youtube videos.
 
 # Version
 
-Beta 0.6.0
+Beta 0.7.0
 
 # Changelog
 
@@ -15,6 +17,8 @@ Beta 0.6.0
 # Current Dependencies:
 
 **None of these need to be installed. They are already contained in the source files.**
+
+-bs4
 
 -pafy
 
@@ -27,6 +31,10 @@ Beta 0.6.0
 -requests
 
 -pynput
+
+-soupsieve
+
+-six
 
 # Status
 
@@ -49,7 +57,3 @@ Windows: Wrapped using pyinstaller
 # Known issues
 
 -Volume sometimes drops off after using the media bar
-
--After a video ends the player must be manually stopped in order for another link to be loaded
-
--Wrapped program spits error when closed
