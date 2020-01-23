@@ -47,7 +47,7 @@ Currently being developed.
 Windows: Wrapped using pyinstaller
 
 # Testing
-YOU MUST HAVE VLC x86 IN YOUR SYSTEM'S PATH FOR THE SCRIPT TO RUN.
+**YOU MUST HAVE VLC x64 IN YOUR SYSTEM'S PATH FOR THE SCRIPT TO RUN.**
 
 -Download and extract source files to local directory
 
