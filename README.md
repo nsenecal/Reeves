@@ -36,6 +36,8 @@ Beta 0.7.0
 
 -six
 
+-From vlc: libvlc.dll, libvlccore.dll the "plugins" folder
+
 # Status
 
 Currently being developed.
@@ -45,6 +47,7 @@ Currently being developed.
 Windows: Wrapped using pyinstaller
 
 # Testing
+YOU MUST HAVE VLC x86 IN YOUR SYSTEM'S PATH FOR THE SCRIPT TO RUN.
 
 -Download and extract source files to local directory
 

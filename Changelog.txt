@@ -1,3 +1,6 @@
+1/22/2020
+-Fixed vlc integration, added missing dependencies
+
 1/21/2020
 -Added youtube search function
 -Added video que
