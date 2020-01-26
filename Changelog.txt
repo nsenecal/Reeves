@@ -1,3 +1,7 @@
+1/26/2020
+-Merged search and link input fields, updated youtube-dl
+-Minor gui reshuffling
+
 1/22/2020
 -Fixed vlc integration, added missing dependencies
 
