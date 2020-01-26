@@ -8,7 +8,7 @@ Goal: Censor questionable language in Youtube videos.
 
 # Version
 
-Beta 0.7.0
+Beta 0.7.1
 
 # Changelog
 
