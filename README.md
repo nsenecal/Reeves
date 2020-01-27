@@ -12,6 +12,7 @@ Beta 0.7.1
 
 # Testing/Running
 YOU MUST HAVE VLC x64 IN YOUR SYSTEM'S PATH FOR THE SCRIPT TO RUN.
+THE RELEASES SHOULD WORK ON THEIR OWN.
 
 -Download and extract source files to local directory
 
