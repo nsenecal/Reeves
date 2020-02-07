@@ -18,12 +18,13 @@ root = tkinter.Tk()
 width  = root.winfo_screenwidth()
 height = root.winfo_screenheight()
 root.title("Reeves [Beta]")
-root.geometry('600x80')
+root.geometry('600x60')
 root.geometry("+%d+%d" % ((width/2)-400, (height-150)))
 root.wm_attributes("-topmost", 1)
 root.resizable(False, False)
 
 newWindow = tkinter.Toplevel(root)
+newWindow.title("Reeves Player")
 canvas = tkinter.Canvas(newWindow,bg="black")
 canvas.pack(fill=tkinter.BOTH, expand=1)
 
@@ -47,7 +48,7 @@ fullImage = tkinter.PhotoImage(file = os.getcwd()+"/Images/full.png")
 windowImage = tkinter.PhotoImage(file = os.getcwd()+"/Images/windowed.png")
 
 frame = tkinter.Frame(root)
-frame.place(x = 340, y = 0, width = 300, height = 60)
+frame.place(x = 340, y = 0, width = 300, height = 40)
 lb = tkinter.Listbox(frame, width=40, height=1)
 lb.pack(side = 'left',fill = 'y' )
 scrollbar = tkinter.Scrollbar(frame, orient="vertical",command=lb.yview)
@@ -59,22 +60,18 @@ def click(self):
     lb.delete(idx)
     print(que)
 lb.bind("<Double-1>", click)
-def search():
-    if entry.get() != "":
-        query = urllib.parse.quote(entry.get())
-        url = "https://www.youtube.com/results?search_query=" + query
-        response = urllib.request.urlopen(url)
-        html = response.read()
-        soup = BeautifulSoup(html, 'html.parser')
-        code = soup.find(attrs={'class':'yt-uix-tile-link'})['href']
-        lb.insert(tkinter.END, pafy.new('https://www.youtube.com' +code).title)
-        que[pafy.new('https://www.youtube.com' + code).title] = 'https://www.youtube.com' + code
-        entry.delete(0,tkinter.END)
+
 que = {}
-entry = tkinter.Entry(root, bd=3)
-entry.place(x=40,y=40,height = 20,width = 200)
-button = tkinter.Button(root, bg = "red", command = search)
-button.place(x=240,y=40,height = 20,width = 20)
+def search():
+    query = urllib.parse.quote(urlInput.get())
+    url = "https://www.youtube.com/results?search_query=" + query
+    response = urllib.request.urlopen(url)
+    html = response.read()
+    soup = BeautifulSoup(html, 'html.parser')
+    code = soup.find(attrs={'class':'yt-uix-tile-link'})['href']
+    lb.insert(tkinter.END, pafy.new('https://www.youtube.com' +code).title)
+    que[pafy.new('https://www.youtube.com' + code).title] = 'https://www.youtube.com' + code
+    urlInput.delete(0,tkinter.END)
 
 def playVideo(data):
     global media
@@ -90,6 +87,7 @@ def playVideo(data):
     h = canvas.winfo_id()
     media.set_hwnd(h)
     media.play()
+    newWindow.title(video.title)
     startButton.config(image = pauseImage)
     while media.is_playing() == 0:
         state = False
@@ -159,24 +157,32 @@ def playBack():
     global endGame
     if state == False:
         if currentVideo == None:
-            if urlInput.get().find("https://www.youtube.com/watch?v=") > -1 or urlInput.get().find("https://youtu.be/") > -1 and currentVideo == None:
+            if urlInput.get().find("https://www.youtube.com/watch?v=") > -1 or urlInput.get().find("https://youtu.be/") > -1:
                 loadFile(urlInput.get())
-            elif urlInput.get().find("https://www.youtube.com/watch?v=") == -1 and urlInput.get().find("https://youtu.be/") == -1 and len(que) > 0:
+            elif urlInput.get() != "":
+                search()
+            elif len(que) > 0:
                 loadFile(que[list(que.keys())[0]])
                 lb.delete(0)
                 del que[list(que.keys())[0]]
         else:
-            if enforcedMute == True:
-                moment = media.get_time()/1000
-            media.play()
-            startButton.config(image = pauseImage)
-            state = True
+            if urlInput.get() != "":
+                search()
+            else:
+                if enforcedMute == True:
+                    moment = media.get_time()/1000
+                media.play()
+                startButton.config(image = pauseImage)
+                state = True
     elif state == True and media.is_playing():
-        if enforcedMute == True:
-            endGame -= ((media.get_time()/1000)-moment)
-        media.pause()
-        startButton.config(image = startImage)
-        state = False
+        if urlInput.get() != "":
+            search()
+        else:
+            if enforcedMute == True:
+                endGame -= ((media.get_time()/1000)-moment)
+            media.pause()
+            startButton.config(image = startImage)
+            state = False
 
 #Stop button function
 def stop():
@@ -184,6 +190,7 @@ def stop():
     global currentVideo
     global censorState
     global media
+    newWindow.title("Reeves Player")
     startButton.config(image = startImage)
     media.stop()
     urlInput.delete(0,tkinter.END)
@@ -241,12 +248,10 @@ stopButton = tkinter.Button(root, image = stopImage, command = stop)
 stopButton.place(x=300,y=0,height = 20,width = 20)
 volumeLabel = tkinter.Label(root, image = soundImage)
 volumeLabel.place(x=0, y=20, width=40, height=20)
-searchLabel = tkinter.Label(root, text = "Search:")
-searchLabel.place(x=0, y=40, width=40, height=20)
 
 #Toggles censor system
 delet = tkinter.Button(root, command = censor)
-delet.place(x=280, y=20, height = 20, width = 40)
+delet.place(x=280, y=20, height = 20, width = 20)
 
 #Volume slider
 volumeSlider = tkinter.Scale(root, showvalue = 0, length=220, from_=0, to=100, orient=tkinter.HORIZONTAL, command = sound)
@@ -256,7 +261,7 @@ media.audio_set_volume(50) #Set volume to half
 
 #scrubber
 mediaSlider = tkinter.Scale(root, bd = 0, showvalue = 0, length=595, from_=0, to=595, orient=tkinter.HORIZONTAL, command = focusOff)
-mediaSlider.place(x=0, y=60)
+mediaSlider.place(x=0, y=40)
 mediaSlider.set(0)
 mediaSlider.bind("<Button-1>", startScrub)
 mediaSlider.bind("<ButtonRelease-1>", stopScrub)
@@ -305,15 +310,16 @@ while True:
     x, y = pyautogui.position()
     if (y >= root.winfo_y()-20 and y <= root.winfo_y()+root.winfo_height()+40 and x >= root.winfo_x()-20 and x <= root.winfo_x()+root.winfo_width()+20) and enabled == True:
         root.attributes('-alpha', 1)
+        root.lift()
         root.update()
     elif (y > root.winfo_y()-20 or y < root.winfo_y()+root.winfo_height()+40) or enabled == False:
         root.attributes('-alpha', 0)
         root.update()
 
     if censorState == True:
-        delet.config(text = "Censor", bg = "Green")
+        delet.config(text = "C", bg = "Green")
     else:
-        delet.config(text = "Raw", bg = "Red")
+        delet.config(text = "R", bg = "Red")
     #Stream takes time to send the length over, so we wait until it's not a nil value
     if media.get_length() > 0:
         videoLength = media.get_length()
