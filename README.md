@@ -30,7 +30,7 @@ Copy/Paste links into the search field for specific videos. Enter search terms a
 
 # Current Dependencies:
 
-**None of these need to be installed. They are already contained in the source files.**
+**None of these need to be installed for the official release. They are already contained in the source files. If you are testing from the source code then all you need to install is VLC x64**
 
 -bs4
 
@@ -54,11 +54,17 @@ Copy/Paste links into the search field for specific videos. Enter search terms a
 
 # Status
 
-Currently being developed.
+Hiatus to determine next steps.
 
 # Compilation for OS'
 
 Windows: Wrapped using pyinstaller
+
+# Potential features
+
+Playlist saving/exports/imports
+
+Built in Censcript creator
 
 # Known issues
 
