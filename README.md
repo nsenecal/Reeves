@@ -8,7 +8,7 @@ Goal: Censor questionable language in Youtube videos.
 
 # Version
 
-Beta 0.7.0
+Beta 0.7.1
 
 # Testing/Running
 YOU MUST HAVE VLC x64 IN YOUR SYSTEM'S PATH FOR THE SCRIPT TO RUN.
